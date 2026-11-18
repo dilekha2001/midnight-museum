@@ -128,3 +128,7 @@ The opening page now includes a speech bubble beside the thief: “Welcome to th
 The text types at a varied pace with pauses at punctuation. **Enable typing sound** starts quiet, synthesized typewriter clicks after a user tap and replays the message; sound can be muted. Skip and Replay controls keep the invitation optional. The complete message is available to screen readers without announcing every letter. Reduced-motion preferences reveal the message immediately. Timers and audio are disposed when the opening page closes.
 
 The speech bubble sits beside the thief on desktop and below the character on portrait phones. Publishing this update requires committing the updated src folder to the GitHub repository.
+
+## Default sound behavior
+
+The welcome bubble no longer shows Sound on or Enable typing sound text. Typing audio unlocks on the first tap/click/key interaction, as required by browser autoplay policies, without a separate sound prompt. Clicking Enter the museum (or Continue the heist) starts the room soundscape automatically. The in-game mute control remains available, and menus/rotation prompts still pause ambience.
