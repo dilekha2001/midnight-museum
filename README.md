@@ -51,3 +51,9 @@ The title and thief welcome pages use an original piano-and-pad score, with auto
 ## Landscape from launch
 
 On mobile, the page attempts an orientation lock immediately, including on the title screen. Browsers that require interaction show the rotation prompt from launch; Rotate requests fullscreen then landscape. Start also retries when the player has not chosen Continue in portrait. Unsupported browsers retain the manual-rotation fallback. Ten orientation API tests pass; a physical-device walkthrough is still required because fullscreen and orientation support vary by browser.
+
+## Adaptive mobile layout
+
+The layout now measures the available visual viewport and reacts to orientation, browser-toolbar height and touch capability. It supports compact portrait/landscape phones and larger tablets without relying on a device-name list or a maximum tablet width. Safe-area insets protect controls from notches and home indicators. Joystick size follows the screen's shorter edge; touch actions retain large tap areas. The compact HUD keeps the objective while reducing decorative headings and map clutter. Menus and the restoration puzzle scroll within the available height. The welcome page stacks on portrait touch screens and its entry button remains above noninteractive decorative layers. Movement and looking maintain separate pointer-cancellation handling.
+
+45 automated checks pass, including profiles for 320x568, 390x844, 430x932, short landscape phones, and tablets through 1366x1024. A 390x844 portrait title/welcome preview was inspected in Chrome device emulation. Physical-device touch, safe-area, fullscreen and performance testing is still needed; these checks do not guarantee every browser or device.

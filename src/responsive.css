@@ -1,0 +1,143 @@
+/* Final layout rules share the measured visual viewport across every screen. */
+:root{--app-height:100dvh;--app-width:100vw;--stick-size:112px;--action-size:64px;--edge-left:max(12px,env(safe-area-inset-left));--edge-right:max(12px,env(safe-area-inset-right));--edge-top:max(10px,env(safe-area-inset-top));--edge-bottom:max(12px,env(safe-area-inset-bottom))}
+html,body,#root{width:100%;min-width:0;min-height:100%;margin:0}
+body{overflow-x:hidden}
+.game,.game:has(.opening),.game[data-screen="title"]{height:var(--app-height);min-height:0}
+.game[data-screen="intro"] .opening,.title-screen{height:var(--app-height);min-height:0;max-width:100%;overflow-x:hidden}
+.game[data-screen="intro"]>:not(.opening):not(.global-music-toggle){visibility:hidden}
+.title-screen-content{min-height:var(--app-height);padding-top:max(7vh,env(safe-area-inset-top));padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+.title-screen .art-filled-title{max-width:100%;overflow-wrap:normal}
+.overlay,.victory-overlay,.rotate-overlay{height:var(--app-height);min-height:0;max-height:var(--app-height);overflow:auto;overscroll-behavior:contain;padding:var(--edge-top) var(--edge-right) var(--edge-bottom) var(--edge-left)}
+.panel,.statue-panel,.overlay:has(.render-settings)>.panel{max-width:100%;max-height:calc(var(--app-height) - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain}
+.puzzle-panel,.puzzle-body,.puzzle-heading,.inventory,.victory-card{min-width:0}
+.puzzle-panel{width:min(1100px,100%);margin:auto}
+.puzzle-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.puzzle-heading{flex-wrap:wrap;gap:14px}
+.puzzle-heading .glass-button,.panel button,.rotate-card button{min-height:44px}
+.puzzle-board{width:100%;max-width:100%}
+.inventory-grid{min-width:0}
+.fragment{min-width:0}
+.fragment strong,.fragment small{overflow-wrap:anywhere}
+.reference{max-width:100%;height:auto}
+.rotate-card{width:min(370px,100%);max-width:100%;padding:clamp(16px,4vw,27px);margin:auto}
+.rotate-card h2{font-size:clamp(25px,7vw,34px)}
+.rotate-overlay{z-index:100}
+.global-music-toggle{right:var(--edge-right);bottom:var(--edge-bottom)}
+
+/* Touch controls are sized by the short edge, not a particular phone model. */
+:root[data-touch="true"] .game>header{padding-left:var(--edge-left);padding-right:var(--edge-right);padding-top:env(safe-area-inset-top);height:calc(60px + env(safe-area-inset-top));gap:8px}
+:root[data-touch="true"] .header-buttons{gap:5px}
+:root[data-touch="true"] .header-buttons .glass-button{min-height:44px;min-width:44px;font-size:10px;padding:9px}
+:root[data-touch="true"] .brand>b{font-size:29px}
+:root[data-touch="true"] .brand>span{font-size:7px}
+:root[data-touch="true"] .brand strong{font-size:10px}
+:root[data-touch="true"] .virtual-stick-wrap{left:var(--edge-left);bottom:var(--edge-bottom);z-index:8}
+:root[data-touch="true"] .virtual-stick{width:var(--stick-size);height:var(--stick-size);touch-action:none}
+:root[data-touch="true"] .virtual-stick>i{width:42%;height:42%;left:29%;top:29%}
+:root[data-touch="true"] .virtual-stick-wrap>span{font-size:7px;letter-spacing:.7px;line-height:1.5}
+:root[data-touch="true"] .touch-action{width:var(--action-size);height:var(--action-size);right:var(--edge-right);bottom:calc(var(--edge-bottom) + 62px);z-index:8}
+:root[data-touch="true"] .touch-action>span{font-size:23px}
+:root[data-touch="true"] .touch-action>b{font-size:8px}
+:root[data-touch="true"] .touch-look-zone{touch-action:none;z-index:1}
+:root[data-touch="true"] .touch-look-hint{right:var(--edge-right);bottom:calc(var(--edge-bottom) + var(--action-size) + 75px);font-size:7px;letter-spacing:.5px;max-width:42vw;text-align:right}
+:root[data-touch="true"] .game:has(.virtual-stick-wrap) .bottom-hud{left:auto;right:var(--edge-right);bottom:var(--edge-bottom);max-width:calc(100% - var(--stick-size) - 38px);z-index:8}
+:root[data-touch="true"] .actions{display:flex;flex-direction:row;align-items:center;gap:6px}
+:root[data-touch="true"] .actions>.glass-button{width:44px;height:44px;min-width:44px;padding:0!important;font-size:0!important;display:grid;place-items:center}
+:root[data-touch="true"] .actions>.glass-button::before{content:'?';font:20px Georgia}
+:root[data-touch="true"] .actions>.sound-toggle::before{content:'♪'}
+:root[data-touch="true"] .actions>.sound-toggle[aria-pressed="false"]::before{content:'♫';opacity:.45}
+:root[data-touch="true"] .actions>.satchel{min-height:44px;padding:9px 10px;font-size:12px;gap:6px}
+:root[data-touch="true"] .actions>.satchel span{font-size:10px}
+:root[data-touch="true"] .controls-caption{display:none}
+:root[data-touch="true"] .game:has(.virtual-stick-wrap) .status{position:fixed;left:var(--edge-left);right:auto;bottom:calc(var(--edge-bottom) + var(--stick-size) + 34px);width:min(300px,calc(100vw - 32px));max-width:calc(100vw - 32px);padding:9px 12px;pointer-events:none}
+:root[data-touch="true"] .status p{font-size:10px;line-height:1.6}
+:root[data-touch="true"] .status>span{font-size:19px}
+:root[data-touch="true"] .game:has(.virtual-stick-wrap) .hint{left:var(--edge-left);right:auto;bottom:calc(var(--edge-bottom) + var(--stick-size) + 95px);max-width:min(300px,calc(100vw - 32px));font-size:12px;z-index:9}
+:root[data-touch="true"] .interact{display:none}
+:root[data-touch="true"] .pickup-toast{left:50%;bottom:calc(var(--edge-bottom) + var(--stick-size) + 30px);width:min(360px,calc(100vw - 28px));max-width:calc(100vw - 28px);padding:15px 34px 15px 15px;z-index:15}
+:root[data-touch="true"] .pickup-toast span{font-size:8px}
+:root[data-touch="true"] .pickup-toast button{font-size:12px;min-height:44px}
+:root[data-touch="true"] .pickup-toast h3{font-size:21px}
+:root[data-touch="true"] .pickup-thumb{width:52px;height:44px}
+
+/* Small portrait phones: keep the objective, and let the scene breathe. */
+:root[data-device-layout="phone-portrait"] .room-pill,:root[data-device-layout="phone-portrait"] .map{display:none}
+:root[data-device-layout="phone-portrait"] .mission{left:var(--edge-left);right:var(--edge-right);top:calc(80px + env(safe-area-inset-top));width:auto;max-width:none}
+:root[data-device-layout="phone-portrait"] .mission>h1,:root[data-device-layout="phone-portrait"] .mission>.eyebrow{display:none}
+:root[data-device-layout="phone-portrait"] .next-task{max-width:none;margin:0;padding:10px 12px}
+:root[data-device-layout="phone-portrait"] .next-task h2{font-size:14px;margin:4px 0}
+:root[data-device-layout="phone-portrait"] .next-task p{font-size:11px;line-height:1.6}
+:root[data-device-layout="phone-portrait"] .next-task>span{font-size:8px}
+:root[data-device-layout="phone-portrait"] .next-task>button{font-size:11px;min-height:44px;padding:8px;margin-top:6px}
+:root[data-device-layout="phone-portrait"] .mission-progress{position:absolute;top:-24px;right:0;margin:0}
+:root[data-device-layout="phone-portrait"] .mission-progress>b{font-size:15px}
+:root[data-device-layout="phone-portrait"] .mission-progress>span{font-size:6px;margin-left:6px;letter-spacing:.5px}
+:root[data-device-layout="phone-portrait"] .mission-progress>div{display:none}
+:root[data-device-layout="phone-portrait"] .puzzle-body{grid-template-columns:minmax(0,1fr);gap:22px}
+:root[data-device-layout="phone-portrait"] .puzzle-heading h2{font-size:27px}
+:root[data-device-layout="phone-portrait"] .puzzle-panel{padding:20px 14px 72px}
+:root[data-device-layout="phone-portrait"] .inventory-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+:root[data-device-layout="phone-portrait"] .fragment>div{height:clamp(54px,17vw,90px)}
+:root[data-device-layout="phone-portrait"] .fragment strong{font-size:10px}
+:root[data-device-layout="phone-portrait"] .fragment small{font-size:8px}
+:root[data-device-layout="phone-portrait"] .panel{padding:24px 20px}
+
+/* Landscape phones, including short devices and browser toolbars. */
+:root[data-device-layout="phone-landscape"] .room-pill{display:none}
+:root[data-device-layout="phone-landscape"] .mission{left:var(--edge-left);top:calc(64px + env(safe-area-inset-top));width:min(250px,38vw);max-width:38vw}
+:root[data-device-layout="phone-landscape"] .mission>h1,:root[data-device-layout="phone-landscape"] .mission>.eyebrow,:root[data-device-layout="phone-landscape"] .mission-progress{display:none}
+:root[data-device-layout="phone-landscape"] .next-task{margin:0;padding:8px 10px}
+:root[data-device-layout="phone-landscape"] .next-task h2{font-size:12px;line-height:1.3;margin:4px 0}
+:root[data-device-layout="phone-landscape"] .next-task p{font-size:10px;line-height:1.5}
+:root[data-device-layout="phone-landscape"] .next-task>span{font-size:7px}
+:root[data-device-layout="phone-landscape"] .next-task>button{min-height:36px;font-size:10px;padding:6px;margin-top:4px}
+:root[data-device-layout="phone-landscape"] .map{top:calc(64px + env(safe-area-inset-top));right:var(--edge-right);padding:8px;max-width:150px}
+:root[data-device-layout="phone-landscape"] .map>span{font-size:6px;letter-spacing:1px}
+:root[data-device-layout="phone-landscape"] .map>small{display:none}
+:root[data-device-layout="phone-landscape"] .map-rooms{margin-top:7px}
+:root[data-device-layout="phone-landscape"] .map-rooms>div{width:35px;height:36px}
+:root[data-device-layout="phone-landscape"] .game:has(.virtual-stick-wrap) .status{left:auto;right:calc(var(--edge-right) + var(--action-size) + 12px);bottom:calc(var(--edge-bottom) + 58px);max-width:min(270px,38vw);width:38vw;padding:7px 10px}
+:root[data-device-layout="phone-landscape"] .status p{font-size:9px;line-height:1.5}
+:root[data-device-layout="phone-landscape"] .game:has(.virtual-stick-wrap) .hint{left:50%;transform:translateX(-50%);bottom:calc(var(--edge-bottom) + 63px);max-width:40vw;padding:9px 12px;font-size:11px}
+:root[data-device-layout="phone-landscape"] .touch-look-hint{display:none}
+:root[data-device-layout="phone-landscape"] .pickup-toast{bottom:calc(var(--edge-bottom) + 60px);max-width:48vw;width:360px}
+:root[data-device-layout="phone-landscape"] .puzzle-panel{padding:18px 20px 68px}
+:root[data-device-layout="phone-landscape"] .puzzle-body{grid-template-columns:minmax(0,1.2fr) minmax(190px,1fr);gap:20px}
+:root[data-device-layout="phone-landscape"] .puzzle-heading h2{font-size:25px}
+:root[data-device-layout="phone-landscape"] .inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+:root[data-device-layout="phone-landscape"] .panel{padding:20px;max-height:calc(var(--app-height) - 20px)}
+
+/* Tablet controls stay touch-friendly even above desktop width breakpoints. */
+:root[data-device-layout="tablet"] .mission{top:calc(85px + env(safe-area-inset-top));left:var(--edge-left);max-width:260px}
+:root[data-device-layout="tablet"] .mission h1{font-size:27px}
+:root[data-device-layout="tablet"] .map{top:calc(85px + env(safe-area-inset-top));right:var(--edge-right)}
+:root[data-device-layout="tablet"] .puzzle-panel{padding:30px 26px 76px}
+
+@media(orientation:portrait){
+ :root[data-touch="true"] .opening .opening-brand{padding-top:max(20px,env(safe-area-inset-top))}
+ :root[data-touch="true"] .opening .opening-art{width:100%;height:58vh;min-height:320px;left:0;right:0;bottom:auto}
+ :root[data-touch="true"] .opening .opening-shade{position:fixed;background:linear-gradient(0deg,#091820 0%,#091820ef 35%,#09182044 75%)}
+ :root[data-touch="true"] .opening .thief-performance{position:relative;inset:auto;padding-top:clamp(180px,29vh,330px)}
+ :root[data-touch="true"] .opening .thief-stage{top:-25px;right:0;width:100%;height:clamp(230px,39vh,430px)}
+ :root[data-touch="true"] .opening .thief-welcome{position:relative;bottom:auto;right:auto;width:calc(100% - 32px);max-width:560px;margin:0 auto;padding:19px 20px 12px}
+ :root[data-touch="true"] .opening .opening-copy{width:calc(100% - 32px);max-width:560px;margin:24px auto 0;padding:0 0 24px}
+ :root[data-touch="true"] .opening .opening-copy h2{font-size:clamp(29px,6vw,44px)}
+ :root[data-touch="true"] .opening .opening-copy>p{font-size:13px}
+ :root[data-touch="true"] .opening .opening-story{font-size:12px;max-width:none}
+ :root[data-touch="true"] .opening .opening-cta{width:100%;font-size:14px;min-height:50px}
+ :root[data-touch="true"] .opening .opening-controls{font-size:10px;line-height:1.8}
+ :root[data-touch="true"] .opening .welcome-replay{bottom:38%;right:8%;max-width:84%;min-height:44px;font-size:12px}
+ :root[data-touch="true"] .victory-card{display:flex;flex-direction:column;gap:25px;width:100%}
+ :root[data-touch="true"] .victory-overlay{align-items:flex-start;padding:24px max(20px,env(safe-area-inset-right)) 76px max(20px,env(safe-area-inset-left))}
+ :root[data-touch="true"] .victory-copy h1{font-size:clamp(32px,8vw,50px)}
+ :root[data-touch="true"] .victory-art{max-width:420px;width:90%}
+ :root[data-touch="true"] .victory-links button{min-height:44px}
+}
+@media(max-height:430px){
+ :root[data-touch="true"] .rotate-phone-art{display:none}
+ :root[data-touch="true"] .rotate-card h2{font-size:25px;margin:10px 0}
+ :root[data-touch="true"] .rotate-card p{font-size:11px;margin:8px 0}
+ :root[data-touch="true"] .rotate-card .primary{margin-top:12px}
+ :root[data-touch="true"] .title-screen-content{gap:20px}
+ :root[data-touch="true"] .title-screen .art-filled-title{font-size:clamp(30px,6vw,60px)}
+}

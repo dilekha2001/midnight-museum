@@ -4,6 +4,8 @@ import{makeMuseum}from'./museum';
 import{fragments,rooms}from'./exhibits';
 import{normalizeProgress,collectFragment,placeFragment,isComplete}from'./game-state';
 import './style.css';
+import './responsive.css';
+import useDeviceLayout from './useDeviceLayout';
 import Victory from './Victory';
 import {createMidnightAudio,audioModeForScreen} from './midnight-audio';
 import MobileDisplayControls from './MobileDisplayControls';
@@ -15,7 +17,7 @@ import {nextObjective}from'./player-guide';
 const order=[4,2,0,5,1,3];
 function tileStyle(id){return{backgroundImage:'url("./art/starry.jpg")',backgroundSize:'300% 200%',backgroundPosition:`${id%3*50}% ${Math.floor(id/3)*100}%`}}
 function load(){try{return normalizeProgress(JSON.parse(localStorage.getItem('midnight-heist-v1')))}catch{return normalizeProgress(null)}}
-function App(){const[save,setSave]=useState(load),[screen,setScreen]=useState('title'),[room,setRoom]=useState('Grand Gallery'),[target,setTarget]=useState(''),[message,setMessage]=useState('Explore the museum freely and find six hidden painting fragments.'),[selected,setSelected]=useState(null),[hint,setHint]=useState(false),[preview,setPreview]=useState(false),[error,setError]=useState(false),[statue,setStatue]=useState(null),[quality,setQuality]=useState('auto'),[brightness,setBrightness]=useState(1.38),[sound,setSound]=useState(true),[rotationPrompt,setRotationPrompt]=useState(false),[pickup,setPickup]=useState(null);const host=useRef(),world=useRef(),audio=useRef(),display=useRef(),progressRef=useRef(save),soundRef=useRef(sound),screenRef=useRef(screen);screenRef.current=screen;progressRef.current=save;soundRef.current=sound;const objective=nextObjective(save,room,fragments);const won=isComplete(save),next=save.found.length===0?fragments[1]:fragments.find(f=>f.room===room&&!save.found.includes(f.id))||fragments.find(f=>!save.found.includes(f.id));
+function App(){useDeviceLayout();const[save,setSave]=useState(load),[screen,setScreen]=useState('title'),[room,setRoom]=useState('Grand Gallery'),[target,setTarget]=useState(''),[message,setMessage]=useState('Explore the museum freely and find six hidden painting fragments.'),[selected,setSelected]=useState(null),[hint,setHint]=useState(false),[preview,setPreview]=useState(false),[error,setError]=useState(false),[statue,setStatue]=useState(null),[quality,setQuality]=useState('auto'),[brightness,setBrightness]=useState(1.38),[sound,setSound]=useState(true),[rotationPrompt,setRotationPrompt]=useState(false),[pickup,setPickup]=useState(null);const host=useRef(),world=useRef(),audio=useRef(),display=useRef(),progressRef=useRef(save),soundRef=useRef(sound),screenRef=useRef(screen);screenRef.current=screen;progressRef.current=save;soundRef.current=sound;const objective=nextObjective(save,room,fragments);const won=isComplete(save),next=save.found.length===0?fragments[1]:fragments.find(f=>f.room===room&&!save.found.includes(f.id))||fragments.find(f=>!save.found.includes(f.id));
 useEffect(()=>{world.current=makeMuseum(host.current,{onCollect:handleCollect,onFrame:()=>openPainting(),onRoom:setRoom,onTarget:setTarget,onError:()=>setError(true),onStatue:art=>{setStatue(art);setScreen('statue')},onNotice:setMessage,onFootstep:()=>audio.current?.footstep()});return()=>world.current?.dispose()},[]);
 useEffect(()=>{world.current?.setFound(save.found);world.current?.setRestored(won);try{localStorage.setItem('midnight-heist-v1',JSON.stringify(save))}catch{}},[save,won]);useEffect(()=>{world.current?.setActive(screen==='play'&&!rotationPrompt)},[screen,rotationPrompt]);useEffect(()=>{const key=e=>{if(screen==='intro'||screen==='title')return;if(e.code==='Escape'){setScreen(screen==='play'?'pause':'play');setSelected(null)}if(e.code==='KeyI'){if(screen==='puzzle')setScreen('play');else openPainting()}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[screen]);
 useEffect(()=>{world.current?.setQuality(quality)},[quality]);useEffect(()=>{world.current?.setBrightness(brightness)},[brightness]);
@@ -43,4 +45,3 @@ return <div className="game" data-screen={screen}>{screen!=='play'&&<button clas
 </div>}
 </div>}
 createRoot(document.getElementById('root')).render(<App/>);
-
