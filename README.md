@@ -2,6 +2,8 @@
 
 A first-person 3D museum game built with React, Three.js, and Vite. A custom illustrated opening page introduces a masked art thief carrying a glowing canvas fragment. Enter the museum, find six pieces in three galleries, then rebuild The Starry Night to win.
 
+🎮 **[Play Midnight Museum](https://dilekha2001.github.io/midnight-museum/)**
+
 ## Start
 
 ```powershell
