@@ -132,3 +132,13 @@ The speech bubble sits beside the thief on desktop and below the character on po
 ## Default sound behavior
 
 The welcome bubble no longer shows Sound on or Enable typing sound text. Typing audio unlocks on the first tap/click/key interaction, as required by browser autoplay policies, without a separate sound prompt. Clicking Enter the museum (or Continue the heist) starts the room soundscape automatically. The in-game mute control remains available, and menus/rotation prompts still pause ambience.
+
+## First-minute usability update
+
+New players begin with a clearly labeled fragment on an entrance display directly ahead of the starting camera. The next-objective panel guides them through collecting and placing one piece before the broader search. The first placement uses a selected fragment and a highlighted matching space; a faint image guide supports later reconstruction. Existing collected/placed IDs remain valid, so saved games are preserved.
+
+Every pickup shows an artwork preview, progress count, a short animation toward the satchel and a gentle collection chime when sound is enabled. The first pickup message remains until dismissed or the painting table is opened. Later messages dismiss after a short delay. Gallery map labels show recovered counts. If play remains idle without progress for 45 seconds, a hint appears.
+
+Phones now use a two-thumb layout: left analog movement joystick, right-side swipe to look and a large contextual Collect/Inspect/Restore button. Nearby fragments can be collected without pixel-perfect aiming. Tapping the right look area still inspects the tapped object. Joystick input has a deadzone, caps diagonal speed and clears on pause, blur, resize, pointer cancellation or component removal.
+
+Validation includes six new guide/joystick tests (`src/player-guide.test.js`) in addition to the existing game, model, display and rendering tests. Browser-tab access remained unavailable, so an actual phone/usability walkthrough is still required before judging the new controls.

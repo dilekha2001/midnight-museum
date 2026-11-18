@@ -1,0 +1,10 @@
+﻿import test from'node:test';
+import assert from'node:assert/strict';
+import{nextObjective,joystickVector,FIRST_FRAGMENT}from'./player-guide.js';
+import{fragments}from'./exhibits.js';
+test('new players are directed to the entrance fragment before the full search',()=>{const guide=nextObjective({found:[],placed:[]},'Grand Gallery',fragments);assert.equal(guide.stage,'find');assert.equal(guide.id,FIRST_FRAGMENT);assert.match(guide.detail,/entrance/)});
+test('existing collected pieces get placement guidance without resetting progress',()=>{const p={found:[4,0],placed:[]};const guide=nextObjective(p,'Antiquities',fragments);assert.equal(guide.stage,'place');assert.equal(guide.id,4);assert.deepEqual(p,{found:[4,0],placed:[]})});
+test('guide favors unfinished exhibits in the current room and redirects only when clear',()=>{const p={found:[1,4],placed:[1]};const a=nextObjective(p,'Antiquities',fragments);assert.equal(a.room,'Antiquities');assert.match(a.title,/Search/);const b=nextObjective(p,'Grand Gallery',fragments);assert.equal(b.room,'Antiquities');assert.match(b.title,/Visit/)});
+test('all collected pieces move the goal to reconstruction and then completion',()=>{const found=[0,1,2,3,4,5];assert.equal(nextObjective({found,placed:[1]},'Grand Gallery',fragments).stage,'finish');assert.equal(nextObjective({found,placed:found},'Grand Gallery',fragments).stage,'won')});
+test('thumbstick deadzone prevents drift and invalid radius cannot move player',()=>{assert.deepEqual(joystickVector(1,1,40),{x:0,y:0});assert.deepEqual(joystickVector(100,100,0),{x:0,y:0})});
+test('thumbstick preserves slow analog movement and caps diagonal speed',()=>{const half=joystickVector(20,0,40);assert.ok(half.x>0&&half.x<1);for(const point of[[500,500],[-100,200],[0,-500]]){const v=joystickVector(...point,40);assert.ok(Math.hypot(v.x,v.y)<=1.000001)}assert.equal(joystickVector(0,-40,40).y,1)});
