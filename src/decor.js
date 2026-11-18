@@ -1,7 +1,7 @@
 ﻿import * as T from 'three';
 // Keep decoration on gallery edges so the central walkways and fragment approaches stay clear.
-export function decorateMuseum({scene,mesh,box,cyl,label,painting,material,gold,stone,wood}){
-const red=material('#3e202b'),black=material('#10131e'),silver=material('#8b9bb0',.7),blue=material('#18396b'),ivory=material('#b6b4ba'),paper=material('#c2b69b');
+export function decorateMuseum({scene,mesh,box,cyl,label,painting,material,gold,stone,wood,velvet,collider=()=>{}}){
+const red=velvet||material('#3e202b'),black=material('#10131e'),silver=material('#8b9bb0',.7),blue=material('#18396b'),ivory=material('#b6b4ba'),paper=material('#c2b69b');
 // Crimson gallery runners and gilded wall panels.
 for(const x of [-12,0,12]){box(3.2,.015,21,x,.025,0,red);for(const side of [-1,1])box(.035,.018,21,x+side*1.5,.035,0,gold)}
 for(const x of [-17.72,17.72])for(const z of [-11,-3,5,11]){const curtain=box(.12,3.7,1.2,x,2.8,z,red);for(let i=0;i<5;i++)cyl(.035,.035,3.7,x+(x<0?.09:-.09),2.8,z-.5+i*.25,red);box(.2,.16,1.5,x,4.7,z,gold)}
@@ -18,7 +18,7 @@ for(const [i,x,z] of [[0,-8,7],[1,8,-9],[2,15,-1],[3,-15,-12]]){box(1.4,.85,.9,x
 // Framed reproductions on the entrance walls, leaving the centre doorway clear.
 painting('./art/mona.jpg',-12,3.1,13.6,1.8,2.7,Math.PI);
 // Brass rope barriers beneath paintings.
-for(const [x,z] of [[0,-11.7],[-12,-11.7],[12,-11.7]]){for(const s of [-1,1]){cyl(.04,.05,.85,x+s*2,.45,z,gold);mesh(new T.SphereGeometry(.09,12,12),gold,x+s*2,.9,z);cyl(.18,.2,.05,x+s*2,.04,z,gold)}const curve=new T.CatmullRomCurve3([new T.Vector3(x-2,.85,z),new T.Vector3(x,.65,z),new T.Vector3(x+2,.85,z)]);mesh(new T.TubeGeometry(curve,20,.035,8,false),red,0,0,0)}
+for(const [x,z] of [[0,-11.7],[-12,-11.7],[12,-11.7]]){collider(x,z,4.2,.08);for(const s of [-1,1]){cyl(.04,.05,.85,x+s*2,.45,z,gold);mesh(new T.SphereGeometry(.09,12,12),gold,x+s*2,.9,z);cyl(.18,.2,.05,x+s*2,.04,z,gold)}const curve=new T.CatmullRomCurve3([new T.Vector3(x-2,.85,z),new T.Vector3(x,.65,z),new T.Vector3(x+2,.85,z)]);mesh(new T.TubeGeometry(curve,20,.035,8,false),red,0,0,0)}
 // Blue moonlight and restrained crimson light pools; artifacts remain readable.
-for(const x of [-17,17]){const light=new T.PointLight('#829abf',2,10,2);light.position.set(x,3,0);scene.add(light)}for(const x of [-12,0,12]){const light=new T.PointLight('#b65c6c',.8,8,2);light.position.set(x,1.5,12);scene.add(light)}
+for(const x of [-17,17]){const light=new T.PointLight('#829abf',2,10,2);light.position.set(x,3,0);scene.add(light)}
 }

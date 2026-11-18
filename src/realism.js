@@ -1,36 +1,32 @@
 ﻿import * as T from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-// Locally generated surface maps: no network texture downloads are needed.
-export function createSurfaces(){
-const textureSize=typeof innerWidth!=='undefined'&&innerWidth>=900?1024:512;let seed=813;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
-function surface(draw,repeat=1){const c=document.createElement('canvas');c.width=c.height=textureSize;const p=c.getContext('2d');p.scale(textureSize/512,textureSize/512);draw(p);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(repeat,repeat);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t}
-const plaster=surface(p=>{p.fillStyle='#d1d0cb';p.fillRect(0,0,512,512);for(let i=0;i<27000;i++){const v=170+Math.floor(rand()*70);p.fillStyle=`rgba(${v},${v},${v},.1)`;p.fillRect(rand()*512,rand()*512,1+rand()*3,1+rand()*3)}},2);
-const marble=surface(p=>{p.fillStyle='#b6b6b3';p.fillRect(0,0,512,512);for(let i=0;i<80;i++){p.beginPath();const x=rand()*700-90,y=rand()*512;p.moveTo(x,y);p.bezierCurveTo(x+80,y-80,x+180,y+100,x+420,y-140);p.strokeStyle=`rgba(72,81,88,${.025+rand()*.07})`;p.lineWidth=.4+rand()*1.3;p.stroke()}for(let i=0;i<13000;i++){p.fillStyle=rand()>.5?'#ffffff08':'#19213408';p.fillRect(rand()*512,rand()*512,2,2)}});
-const oak=surface(p=>{p.fillStyle='#584334';p.fillRect(0,0,512,512);for(let i=0;i<2000;i++){const y=rand()*512;p.beginPath();p.moveTo(0,y);p.bezierCurveTo(170,y+rand()*8,370,y-rand()*8,512,y);p.strokeStyle=rand()>.5?'#c19b6b22':'#100e1022';p.lineWidth=.3+rand();p.stroke()}for(let i=0;i<8;i++){p.fillStyle='#130f1180';p.fillRect(0,i*64,512,2);p.fillRect(i%2?160:360,i*64,2,64)}},2);
-const bronze=surface(p=>{p.fillStyle='#94774c';p.fillRect(0,0,512,512);for(let i=0;i<18000;i++){p.fillStyle=rand()>.6?'#294e4533':'#e4c27c19';p.beginPath();p.arc(rand()*512,rand()*512,rand()*3+.3,0,Math.PI*2);p.fill()}});
-function normalMap(texture,strength){const source=texture.image;const input=source.getContext('2d').getImageData(0,0,textureSize,textureSize);const c=document.createElement('canvas');c.width=c.height=textureSize;const p=c.getContext('2d'),out=p.createImageData(textureSize,textureSize);const height=(x,y)=>input.data[(((y+textureSize)%textureSize)*textureSize+((x+textureSize)%textureSize))*4]/255;for(let y=0;y<textureSize;y++)for(let x=0;x<textureSize;x++){const dx=(height(x-1,y)-height(x+1,y))*strength,dy=(height(x,y-1)-height(x,y+1))*strength;const inv=1/Math.sqrt(dx*dx+dy*dy+1),i=(y*textureSize+x)*4;out.data[i]=(dx*inv*.5+.5)*255;out.data[i+1]=(dy*inv*.5+.5)*255;out.data[i+2]=(inv*.5+.5)*255;out.data[i+3]=255}p.putImageData(out,0,0);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.copy(texture.repeat);return t}const plasterNormal=normalMap(plaster,1.1),marbleNormal=normalMap(marble,.65),oakNormal=normalMap(oak,.8);
-const stone=new T.MeshStandardMaterial({color:'#d8d6cb',map:marble,normalMap:marbleNormal,normalScale:new T.Vector2(.18,.18),roughness:.48});const wood=new T.MeshStandardMaterial({color:'#b19980',map:oak,normalMap:oakNormal,normalScale:new T.Vector2(.3,.3),roughness:.4});const wall=new T.MeshStandardMaterial({color:'#243854',map:plaster,normalMap:plasterNormal,normalScale:new T.Vector2(.22,.22),roughness:.92});const gold=new T.MeshStandardMaterial({color:'#d2b88a',map:bronze,metalness:.72,roughness:.38});const dark=new T.MeshStandardMaterial({color:'#111824',roughness:.5});return {stone,wood,wall,gold,dark,maps:[plaster,marble,oak,bronze,plasterNormal,marbleNormal,oakNormal]};
-}
-export function addRealism({scene,renderer,mesh,box,cyl,label,material,stone,wood,gold}){
-const pmrem=new T.PMREMGenerator(renderer);const room=new RoomEnvironment();const environment=pmrem.fromScene(room,.05);scene.environment=environment.texture;scene.environmentIntensity=.36;room.dispose();pmrem.dispose();
-const ivory=material('#b8b8b1'),navy=material('#14243b'),ceiling=material('#ccc7bb'),iron=material('#171b23'),velvet=material('#49232e');
+export {createSurfaces} from './museum-surfaces';
+export function addRealism({scene,renderer,mesh,box,cyl,label,material,stone,wood,gold,velvet:upholstery}){
+const pmrem=new T.PMREMGenerator(renderer);const room=new RoomEnvironment();let environment=pmrem.fromScene(room,.08);scene.environment=environment.texture;scene.environmentIntensity=.45;room.dispose();
+const probeTarget=new T.WebGLCubeRenderTarget(128,{type:T.HalfFloatType});const probe=new T.CubeCamera(.1,65,probeTarget);probe.position.set(0,2.4,1);
+
+const ivory=material('#14283e'),navy=material('#0c1d32'),ceiling=material('#52677e'),iron=material('#171b23'),velvet=upholstery||material('#49232e');
 // Human-scale dado panels, deep skirting and a coffered plaster ceiling.
-for(const x of [-17.65,-6.28,6.28,17.65]){const interior=Math.abs(x)<7;for(const [length,center]of(interior?[[13.2,-7.2],[5.1,11.2]]:[[27.2,0]])){box(.1,1.15,length,x,.575,center,ivory);box(.15,.1,length,x,1.19,center,stone);box(.17,.17,length,x,.09,center,iron)}for(let z=-12;z<=12;z+=2.4){if(interior&&z>-1.5&&z<9.5)continue;box(.07,.72,1.8,x+(x<0?.07:-.07),.6,z,navy)}}
+for(const x of [-17.65,17.65]){const interior=Math.abs(x)<7;for(const [length,center]of(interior?[[13.2,-7.2],[5.1,11.2]]:[[27.2,0]])){box(.1,1.15,length,x,.575,center,ivory);box(.15,.1,length,x,1.19,center,stone);box(.17,.17,length,x,.09,center,iron)}for(let z=-12;z<=12;z+=2.4){if(interior&&z>-1.5&&z<9.5)continue;box(.07,.72,1.8,x+(x<0?.07:-.07),.6,z,navy)}}
 for(const z of [-13.65,13.65]){box(35.2,1.15,.1,0,.575,z,ivory);box(35.2,.1,.17,0,1.2,z,stone);box(35.2,.17,.17,0,.09,z,iron);for(let x=-16;x<=16;x+=2.4)box(1.8,.72,.07,x,.6,z+(z<0?.07:-.07),navy)}
-for(const x of [-12,0,12]){for(const z of [-9,-3,3,9]){box(10.8,.1,.12,x,5.57,z,ceiling);box(.12,.1,24,x-5.4,5.57,0,ceiling);box(.12,.1,24,x+5.4,5.57,0,ceiling)}box(10.9,.1,.15,x,5.57,-12,ceiling);box(10.9,.1,.15,x,5.57,12,ceiling)}
 // Architectural arch surrounds emphasize the passages between galleries.
-for(const x of [-6,6])for(const side of [-1,1]){const arch=mesh(new T.TorusGeometry(2,.11,10,48,Math.PI),stone,x+side*.3,2.42,4);arch.rotation.y=Math.PI/2;for(const z of [2,6]){cyl(.12,.14,2.42,x+side*.3,1.21,z,stone);cyl(.2,.2,.12,x+side*.3,.06,z,stone)}}
 // Wall-mounted exhibition lighting: warm, focused beams and actual soft shadows.
-for(const x of [-12,0,12]){const track=box(5.8,.08,.09,x,5.1,-10.2,iron);for(const offset of [-1.5,1.5]){const fixture=cyl(.08,.09,.22,x+offset,4.98,-10.2,iron);fixture.rotation.x=Math.PI/4;const spot=new T.SpotLight('#ffedce',65,14,.48,.7,1.6);spot.position.set(x+offset,4.82,-10.15);spot.target.position.set(x+offset*.45,2.7,-13.5);scene.add(spot,spot.target);if(offset<0){spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0005;spot.shadow.normalBias=.035;spot.shadow.camera.near=.5;spot.shadow.camera.far=14}scene.add(spot)}}
+for(const x of [-12,0,12]){const track=box(5.8,.08,.09,x,5.1,-10.2,iron);for(const offset of [-1.5,1.5]){const fixture=cyl(.08,.09,.22,x+offset,4.98,-10.2,iron);fixture.rotation.x=Math.PI/4;const spot=new T.SpotLight('#ffe4bd',42,14,.48,.85,2);spot.position.set(x+offset,4.82,-10.15);spot.target.position.set(x+offset*.45,2.7,-13.5);scene.add(spot,spot.target);if(offset<0){spot.castShadow=true;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0005;spot.shadow.normalBias=.035;spot.shadow.camera.near=.5;spot.shadow.camera.far=14}scene.add(spot)}}
 // Detailed exhibit cases have slim structural frames, linen bases and information cards.
 for(const[x,z]of[[-14,4],[15,4],[-12,10],[-8,7],[8,-9],[15,-1],[-15,-12]]){const wide=x===-14||x===15&&z===4||x===-12?1.35:1.5,depth=wide===1.35?1.35:1;const top=wide===1.35?1.88:1.575;for(const s of [-1,1])for(const d of [-1,1])box(.025,top-.96,.025,x+s*wide/2,(top+.96)/2,z+d*depth/2,iron);box(wide+.04,.035,depth+.04,x,top,z,iron);box(.22,.015,.12,x+.35,1.01,z+.23,stone);label('COLLECTION  /  '+String(Math.abs(x*11+z)).padStart(3,'0'),x,.58,z+depth/2+.02,0,1)}
 // More convincing upholstery, subtle feet and carved plinths.
-for(const x of[-2,2]){box(2.2,.12,.84,x,.8,4,velvet);for(const side of[-1,1]){box(.12,.18,.9,x+side*1.14,.77,4,wood);for(const z of[3.68,4.32])cyl(.035,.045,.52,x+side*.95,.26,z,iron)}}
+for(const x of[-2,2]){box(2.2,.12,.84,x,.51,4,velvet);for(const side of[-1,1]){box(.12,.18,.9,x+side*1.14,.53,4,wood);for(const z of[3.68,4.32])cyl(.035,.045,.52,x+side*.95,.26,z,iron)}}
 for(const[x,z]of[[-15,-9],[-10,-5],[-3,-7],[11,8]]){box(1.24,.06,1.24,x,.16,z,stone);box(1.24,.04,1.24,x,.95,z,stone)}
 // Museum wayfinding, air vents, security cameras and illuminated exit signs.
 for(const x of[-12,12]){box(1.1,.25,.025,x,3.2,13.48,iron);label('GALLERY '+(x<0?'I  /  ANTIQUITIES':'III  /  PORTRAITS'),x,3.2,13.44,Math.PI,1);for(let i=0;i<9;i++)box(.7,.018,.03,x,4.7+i*.04,13.5,iron)}
 box(.7,.24,.04,0,3.85,13.5,new T.MeshBasicMaterial({color:'#2e715e'}));label('EXIT',0,3.85,13.45,Math.PI,.45);for(const x of[-16.5,16.5]){const camera=box(.15,.14,.35,x,5,11.8,ivory);camera.rotation.x=.35;mesh(new T.SphereGeometry(.045,12,12),iron,x,4.94,11.6)}
 // Ambient contact shadows anchor display bases even on lower-end devices.
 const c=document.createElement('canvas');c.width=c.height=128;const p=c.getContext('2d'),gradient=p.createRadialGradient(64,64,5,64,64,62);gradient.addColorStop(0,'rgba(0,0,0,.45)');gradient.addColorStop(1,'rgba(0,0,0,0)');p.fillStyle=gradient;p.fillRect(0,0,128,128);const texture=new T.CanvasTexture(c);for(const[x,z]of[[-15,-9],[-10,-5],[-3,-7],[11,8],[-14,4],[15,4],[-12,10],[-8,7],[8,-9],[15,-1],[-15,-12],[-16,0]]){const o=mesh(new T.PlaneGeometry(2.2,2.2),new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}),x,.018,z);o.rotation.x=-Math.PI/2;o.userData.nonBlocking=true}
-return ()=>environment.dispose();
+const release=()=>{environment.dispose();probeTarget.dispose();pmrem.dispose()};
+release.refreshEnvironment=()=>{
+ const hidden=[];scene.traverse(o=>{if(o.isReflector||o.isPoints){hidden.push([o,o.visible]);o.visible=false}});
+ const target=renderer.getRenderTarget();
+ try{probe.update(renderer,scene);const next=pmrem.fromCubemap(probeTarget.texture);scene.environment=next.texture;environment.dispose();environment=next}
+ finally{renderer.setRenderTarget(target);hidden.forEach(([o,v])=>o.visible=v)}
+};return release;
 }
