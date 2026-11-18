@@ -1,0 +1,10 @@
+﻿import test from 'node:test';
+import assert from 'node:assert/strict';
+import{requestLandscape,exitLandscape}from'./display-mode.js';
+test('requests fullscreen before locking landscape',async()=>{const calls=[];const result=await requestLandscape({element:{async requestFullscreen(){calls.push('fullscreen')}},document:{},orientation:{async lock(value){calls.push(value)}},isLandscape:()=>false});assert.deepEqual(calls,['fullscreen','landscape']);assert.equal(result.status,'locked')});
+test('unsupported rotation stays playable with manual fallback',async()=>{const result=await requestLandscape({element:{},document:{},orientation:undefined,isLandscape:()=>false});assert.equal(result.status,'manual')});
+test('denied fullscreen and rotation do not cause an unhandled failure',async()=>{const result=await requestLandscape({element:{async requestFullscreen(){throw Error('denied')}},document:{},orientation:{async lock(){throw Error('unsupported')}},isLandscape:()=>false});assert.equal(result.status,'manual');assert.equal(result.fullscreen,false)});
+test('already-landscape browsers without lock support report usable landscape',async()=>{const result=await requestLandscape({element:{},document:{},orientation:{},isLandscape:()=>true});assert.equal(result.status,'landscape')});
+test('existing fullscreen is not requested twice',async()=>{let calls=0;await requestLandscape({element:{async requestFullscreen(){calls++}},document:{fullscreenElement:{}},orientation:{async lock(){}},isLandscape:()=>true});assert.equal(calls,0)});
+test('exit unlocks orientation and leaves fullscreen',async()=>{const calls=[];await exitLandscape({document:{fullscreenElement:{},async exitFullscreen(){calls.push('exit')}},orientation:{unlock(){calls.push('unlock')}}});assert.deepEqual(calls,['unlock','exit'])});
+test('a failed unlock still permits exiting fullscreen',async()=>{let exited=false;await exitLandscape({document:{fullscreenElement:{},async exitFullscreen(){exited=true}},orientation:{unlock(){throw Error('not supported')}}});assert.equal(exited,true)});

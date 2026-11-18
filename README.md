@@ -1,8 +1,8 @@
-﻿# Midnight Museum — The Starry Night Heist
+# Midnight Museum — The Starry Night Heist
+
+**[Play Midnight Museum](https://dilekha2001.github.io/midnight-museum/)** — Open in your browser on desktop or mobile. No GitHub account required.
 
 A first-person 3D museum game built with React, Three.js, and Vite. A custom illustrated opening page introduces a masked art thief carrying a glowing canvas fragment. Enter the museum, find six pieces in three galleries, then rebuild The Starry Night to win.
-
-🎮 **[Play Midnight Museum](https://dilekha2001.github.io/midnight-museum/)**
 
 ## Start
 
@@ -104,3 +104,27 @@ Run all checks with `node --test src/game-state.test.js src/decor.test.js src/re
 The after-hours treatment emphasizes cool blue window beams, slightly denser low haze and warm islands of exhibit lighting while preserving the brightness control. The fictional museum clock reads 12:07 AM. The HUD uses quieter blue accents and an after-hours message.
 
 **Sound off / Sound on** toggles an optional, low-volume synthesized soundscape: filtered air, a low room tone and soft clock ticks. It starts muted, requires a user click, and fades out in menus. Web Audio nodes and timers are cleaned up when the game closes; there are no audio downloads or music assets.
+
+## Interior clarity update
+
+Desktop surface maps now use 1024px textures (512px on smaller screens), with matching generated normal maps. Painting textures use anisotropic filtering and a very low emissive contribution to preserve detail in dim galleries. Display glass has subtler tint and smoother reflections. A restrained edge-clarity pass follows anti-aliasing, and film grain strength is halved.
+
+Balanced and High presets now allocate more resolution to rendering, ambient occlusion and marble reflections; High reflections use a 1024px target. Performance mode keeps its lower budgets. Browser visual/performance verification remains pending.
+
+To publish these local changes to the existing GitHub Pages site, upload and commit the updated `src` folder. The deployment workflow then rebuilds the public game. No new dependencies or public assets are required for this update.
+
+## Mobile landscape mode
+
+Phones now show a Rotate button in the game header. On entering the museum in portrait, a landscape recommendation pauses movement and audio, with options to **Rotate & play fullscreen** or **Continue in portrait**. The Rotate button requests fullscreen, then a landscape orientation lock when the browser allows it. Unsupported or denied requests show manual rotation instructions instead of blocking gameplay. Fullscreen has an exit control.
+
+Landscape phones use a shorter HUD layout with larger touch buttons, safe-area-aware edges, and repositioned status/actions so the museum is not cropped by the old portrait minimum height. The renderer resizes automatically when orientation changes. Native orientation APIs vary by browser; actual phone testing is still needed.
+
+Orientation behavior is covered by `node --test src/display-mode.test.js`, including unsupported APIs, denied fullscreen/rotation, existing fullscreen and clean exit.
+
+## The thief’s animated welcome
+
+The opening page now includes a speech bubble beside the thief: “Welcome to the show, partner. Let’s make the night a little more interesting… together. Click ‘Enter the museum’ and let the midnight adventure begin!” The button name changes to Continue the heist for returning players.
+
+The text types at a varied pace with pauses at punctuation. **Enable typing sound** starts quiet, synthesized typewriter clicks after a user tap and replays the message; sound can be muted. Skip and Replay controls keep the invitation optional. The complete message is available to screen readers without announcing every letter. Reduced-motion preferences reveal the message immediately. Timers and audio are disposed when the opening page closes.
+
+The speech bubble sits beside the thief on desktop and below the character on portrait phones. Publishing this update requires committing the updated src folder to the GitHub repository.
