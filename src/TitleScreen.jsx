@@ -7,6 +7,7 @@ export default function TitleScreen({onStart}){
   <div className="title-screen-content">
    <h1 id="title-screen-name" className="opening-game-title art-filled-title"><span className="title-art-word">Midnight</span>{' '}<span className="title-art-word">Museum</span></h1>
    <button className="title-start" onClick={onStart}>Start <span aria-hidden="true">→</span></button>
+   <p className="desktop-platform">Desktop game / Keyboard and mouse required</p>
   </div>
  </section>
 }

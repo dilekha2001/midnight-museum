@@ -15,12 +15,13 @@ Open the Local URL printed in the terminal and choose Enter the museum. A WebGL-
 
 ## Play
 
-- Desktop: WASD walks, drag looks around, Q/E or arrow keys turn, F interacts.
-- Mobile: left joystick walks, swipe the right side to look, Collect/Inspect interacts.
+- WASD walks. Click an empty part of the gallery for mouse look; click or F interacts. Drag to look is the fallback when mouse capture is unavailable. Q/E or left/right arrows also turn.
+- Desktop release: keyboard and mouse required. Phones and touch-only tablets show a shareable desktop invitation instead of loading the 3D game.
 - Walk close to a fragment and select it. The first fragment is on the stand ahead of the entrance.
 - Satchel or I opens the painting puzzle. Select a recovered piece, then its matching space.
-- Place all six pieces to win. Escape opens the pause menu.
-- Pause includes graphics quality and brightness controls.
+- Place all six pieces to win. Escape releases the mouse and pauses; Escape again resumes. Switching tabs or windows pauses automatically.
+- H toggles hints, G toggles the museum map, M toggles sound. Fullscreen is available in supported browsers.
+- Pause includes graphics quality, brightness and mouse sensitivity. Settings and progress save separately in localStorage.
 
 The floor-plan labels indicate your current wing. They do not switch rooms. Hints guide the next search or puzzle step. Progress saves in localStorage on the same browser. Sound starts on entry and can be muted. The opening thief jumps in, delivers a silent typed greeting, then leaves.
 
@@ -32,7 +33,7 @@ The earlier illustrated scene and walking components remain as unused prototype 
 
 ## Validation
 
-34 game, input, statue, movement, geometry and rendering tests pass, including a continuous cross-hall aisle test. Production build verified. Visual desktop/mobile walkthrough remains to be completed; automated checks do not establish that the scene matches the reference image.
+52 automated checks pass, including desktop input eligibility and persisted settings validation. Production build verified. A hands-on desktop browser walkthrough is still required to confirm mouse capture, audio balance and visual layout.
 
 Asset attribution and licenses are retained in the project source and model credit files. Updates on main are published automatically by the GitHub Pages workflow.
 
@@ -48,20 +49,7 @@ The first-person camera remains at a human eye height of 1.68m. Acceleration and
 The title and thief welcome pages use an original piano-and-pad score, with autoplay attempted as soon as the title page loads. If browser policy blocks audible autoplay, the first pointer or keyboard interaction retries it. Entering the museum fades the musical bus and stops its scheduler. Only wind and footsteps play during museum exploration; pickup chimes are removed. Footsteps trigger every 0.95m of actual movement, so standing still or pushing against an obstacle does not produce walking sounds. Pause, puzzle, statue information and celebration screens are silent. Mute remains available throughout. All audio is synthesized locally with Web Audio. Audio and movement tests pass; listening and volume balance require review on actual speakers or headphones.
 
 
-## Landscape from launch
 
-On mobile, the page attempts an orientation lock immediately, including on the title screen. Browsers that require interaction show the rotation prompt from launch; Rotate requests fullscreen then landscape. Start also retries when the player has not chosen Continue in portrait. Unsupported browsers retain the manual-rotation fallback. Ten orientation API tests pass; a physical-device walkthrough is still required because fullscreen and orientation support vary by browser.
+## Desktop release
 
-## Adaptive mobile layout
-
-The layout now measures the available visual viewport and reacts to orientation, browser-toolbar height and touch capability. It supports compact portrait/landscape phones and larger tablets without relying on a device-name list or a maximum tablet width. Safe-area insets protect controls from notches and home indicators. Joystick size follows the screen's shorter edge; touch actions retain large tap areas. The compact HUD keeps the objective while reducing decorative headings and map clutter. Menus and the restoration puzzle scroll within the available height. The welcome page stacks on portrait touch screens and its entry button remains above noninteractive decorative layers. Movement and looking maintain separate pointer-cancellation handling.
-
-45 automated checks pass, including profiles for 320x568, 390x844, 430x932, short landscape phones, and tablets through 1366x1024. A 390x844 portrait title/welcome preview was inspected in Chrome device emulation. Physical-device touch, safe-area, fullscreen and performance testing is still needed; these checks do not guarantee every browser or device.
-
-## iPhone 12 mini landscape correction
-
-The short-landscape welcome now uses a two-column grid below a compact title row. The Enter/Continue action has its own 44px row, so text above it can scroll independently without pushing the entry button off-screen. Long decorative copy is replaced by a brief mission summary at these heights. The thief, message and mist remain within the right column. The music control uses the header area rather than overlapping the message. Portrait and taller layouts retain the full story.
-
-Sizing follows Safari's visual viewport, including toolbar resize/scroll, legacy orientationchange, delayed rotation settling and pageshow. Repeated events with unchanged dimensions do not force additional layout renders. Fullscreen availability and success are checked from browser capability and actual document state; a resolved request alone no longer produces a fullscreen success message. Landscape remains usable with browser chrome visible.
-
-50 automated tests pass, including 812x375, 812x311 and smaller available-height regressions and unsupported/false-success/actual fullscreen API cases. The production build passes. Browser automation and a physical iPhone are unavailable in this session, so the updated layout must still be confirmed on the reporting iPhone before sharing.
+The objective panel is smaller so the gallery remains visible. The map opens on demand. Menus and the restoration table scroll within the window, trap keyboard focus, and keep background controls inactive. The title and welcome retain the Starry Night lettering, thief entrance and lingering mist. Reduced-motion preferences are respected. This release targets laptops and desktop computers with a precise pointer and hover; a touch-capable laptop with a mouse remains eligible. Existing phone controls and orientation modules are retained only as unused prototype source.

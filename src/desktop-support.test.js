@@ -1,0 +1,4 @@
+import test from'node:test';import assert from'node:assert/strict';
+import{supportsDesktopInput,normalizeSettings}from'./desktop-support.js';
+test('desktop input requires a precise pointer and hover, regardless of viewport size',()=>{assert.equal(supportsDesktopInput({fine:true,hover:true}),true);assert.equal(supportsDesktopInput({fine:false,hover:false}),false);assert.equal(supportsDesktopInput({fine:true,hover:false}),false)});
+test('settings recover defaults and reject invalid persisted values',()=>{assert.deepEqual(normalizeSettings(null),{quality:'auto',brightness:1.38,sensitivity:1,sound:true});assert.deepEqual(normalizeSettings({quality:'ultra',brightness:99,sensitivity:-1,sound:false}),{quality:'auto',brightness:2,sensitivity:.5,sound:false});assert.equal(normalizeSettings({brightness:NaN}).brightness,1.38)});
