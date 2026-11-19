@@ -3,7 +3,8 @@ export function deviceProfile({width,height,touch=false}){
  width=Number.isFinite(width)&&width>0?width:360;height=Number.isFinite(height)&&height>0?height:640;
  const portrait=height>width,short=Math.min(width,height);
  const kind=!touch?'desktop':!portrait&&height<600?'phone-landscape':width<650?'phone-portrait':'tablet';
- return{width,height,touch,portrait,kind,stick:Math.round(clamp(short*.23,80,128)),action:Math.round(clamp(short*.16,52,76))};
+ const welcomeLayout=touch&&!portrait&&height<=500?'compact-landscape':'standard';
+ return{width,height,touch,portrait,kind,welcomeLayout,welcomeHeader:height<360?44:52,stick:Math.round(clamp(short*.23,80,128)),action:Math.round(clamp(short*.16,52,76))};
 }
 export function viewportMetrics(view=window,nav=navigator){
  const visual=view.visualViewport,useVisual=visual&&Math.abs((visual.scale??1)-1)<.01;

@@ -1,6 +1,6 @@
 ﻿import test from 'node:test';
 import assert from 'node:assert/strict';
-import{requestLandscape,exitLandscape}from'./display-mode.js';
+import{requestLandscape,exitLandscape,supportsFullscreen,landscapeNotice}from'./display-mode.js';
 test('requests fullscreen before locking landscape',async()=>{const calls=[];const result=await requestLandscape({element:{async requestFullscreen(){calls.push('fullscreen')}},document:{},orientation:{async lock(value){calls.push(value)}},isLandscape:()=>false});assert.deepEqual(calls,['fullscreen','landscape']);assert.equal(result.status,'locked')});
 test('unsupported rotation stays playable with manual fallback',async()=>{const result=await requestLandscape({element:{},document:{},orientation:undefined,isLandscape:()=>false});assert.equal(result.status,'manual')});
 test('denied fullscreen and rotation do not cause an unhandled failure',async()=>{const result=await requestLandscape({element:{async requestFullscreen(){throw Error('denied')}},document:{},orientation:{async lock(){throw Error('unsupported')}},isLandscape:()=>false});assert.equal(result.status,'manual');assert.equal(result.fullscreen,false)});
@@ -8,3 +8,19 @@ test('already-landscape browsers without lock support report usable landscape',a
 test('existing fullscreen is not requested twice',async()=>{let calls=0;await requestLandscape({element:{async requestFullscreen(){calls++}},document:{fullscreenElement:{}},orientation:{async lock(){}},isLandscape:()=>true});assert.equal(calls,0)});
 test('exit unlocks orientation and leaves fullscreen',async()=>{const calls=[];await exitLandscape({document:{fullscreenElement:{},async exitFullscreen(){calls.push('exit')}},orientation:{unlock(){calls.push('unlock')}}});assert.deepEqual(calls,['unlock','exit'])});
 test('a failed unlock still permits exiting fullscreen',async()=>{let exited=false;await exitLandscape({document:{fullscreenElement:{},async exitFullscreen(){exited=true}},orientation:{unlock(){throw Error('not supported')}}});assert.equal(exited,true)});
+test('iPhone-style unsupported fullscreen does not promise to hide the toolbar',async()=>{
+ let requests=0;const element={requestFullscreen(){requests++}},document={fullscreenEnabled:false};
+ assert.equal(supportsFullscreen(element,document),false);
+ const result=await requestLandscape({element,document,isLandscape:()=>true});
+ assert.equal(requests,0);assert.equal(result.fullscreen,false);assert.equal(result.status,'landscape');
+ assert.match(landscapeNotice(result),/toolbar visible/);
+});
+test('a fulfilled fullscreen call alone is not proof of fullscreen',async()=>{
+ const result=await requestLandscape({element:{async requestFullscreen(){}},document:{},orientation:{async lock(){}},isLandscape:()=>true});
+ assert.equal(result.status,'locked');assert.equal(result.fullscreen,false);
+});
+test('actual fullscreen is reported after the document state changes',async()=>{
+ const document={fullscreenElement:null};const element={async requestFullscreen(){document.fullscreenElement=element}};
+ const result=await requestLandscape({element,document,isLandscape:()=>true});
+ assert.equal(result.fullscreen,true);assert.equal(landscapeNotice(result),'Landscape fullscreen is ready.');
+});

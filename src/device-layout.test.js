@@ -18,3 +18,20 @@ test('large tablets retain touch support and landscape phones keep performance m
  assert.equal(automaticQuality({width:1366,height:1024,touch:true}),'balanced');
  assert.equal(automaticQuality({width:1440,height:900}),'balanced');
 });
+test('iPhone 12 mini uses the compact welcome with Safari bars open or closed',()=>{
+ for(const height of[375,342,311,280,256]){
+  const profile=deviceProfile({width:812,height,touch:true});
+  assert.equal(profile.welcomeLayout,'compact-landscape');
+  assert.ok(profile.welcomeHeader<=52);
+  assert.ok(height-profile.welcomeHeader-44-8-32>0,'The copy area and independent 44px entry row have positive space');
+ }
+ assert.equal(deviceProfile({width:375,height:812,touch:true}).welcomeLayout,'standard');
+ assert.equal(deviceProfile({width:1024,height:768,touch:true}).welcomeLayout,'standard');
+});
+test('Safari toolbar expansion updates compact sizing while keeping landscape',()=>{
+ const view={innerWidth:812,innerHeight:375,visualViewport:{width:812,height:311,scale:1},matchMedia:()=>({matches:true})},nav={maxTouchPoints:5};
+ assert.equal(viewportMetrics(view,nav).welcomeHeader,44);
+ view.visualViewport.height=375;assert.equal(viewportMetrics(view,nav).welcomeHeader,52);
+ view.visualViewport.height=280;assert.equal(viewportMetrics(view,nav).height,280);
+ assert.equal(viewportMetrics(view,nav).welcomeLayout,'compact-landscape');
+});
